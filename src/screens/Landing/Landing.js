@@ -1,16 +1,64 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { View, Text, StyleSheet, Dimensions, Image } from "react-native";
 import { CustomButton } from "../../components";
 import color from "../../utils/color";
+import AsyncStorage from "@react-native-community/async-storage";
+import { API, setAuthToken } from "../../config/api";
+import { UserContext } from "../../context/userContext";
 
 const width = Dimensions.get("window").width;
 
+async function getToken() {
+  const token = await AsyncStorage.getItem("token");
+  setAuthToken(token);
+  //alert(token);
+}
+
+getToken();
+// if (AsyncStorage.getItem("token")) setAuthToken(AsyncStorage.getItem("token"));
+//console.log(token);
+
 export const Landing = (props) => {
-  const isLogin = false;
+  //const isLogin = false;
+  const [state, dispatch] = useContext(UserContext);
+
+  // useEffect(() => {
+  //   async function getToken() {
+  //     const token = await AsyncStorage.getItem("token");
+  //     //setAuthToken(token);
+  //     alert(token);
+  //   }
+  //   getToken();
+  // }, []);
 
   useEffect(() => {
-    isLogin ? props.navigation.navigate("Home") : null;
+    //isLogin ? props.navigation.navigate("Home") : null;
+    // async function getToken() {
+    //   const token = await AsyncStorage.getItem("token");
+    //   setAuthToken(token);
+    //   //alert(token);
+    // }
+    // getToken();
+
+    const loadUser = async () => {
+      try {
+        const res = await API.get("/auth");
+        dispatch({
+          type: "USER_LOADED",
+          payload: JSON.stringify(res.data.data.user),
+        });
+        //alert(res);
+        props.navigation.navigate("Home");
+      } catch (err) {
+        dispatch({
+          type: "AUTH_ERROR",
+        });
+      }
+    };
+    loadUser();
   }, []);
+
+  //alert(state.user);
 
   return (
     <View style={styles.container}>

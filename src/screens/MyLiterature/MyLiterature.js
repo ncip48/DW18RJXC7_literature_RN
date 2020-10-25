@@ -1,33 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { View, StyleSheet, FlatList, Dimensions } from "react-native";
 import { API, urlAsset } from "../../config/api";
 import { CardLiterature } from "../../components";
+import { UserContext } from "../../context/userContext";
 import color from "../../utils/color";
-import { Header } from "react-native-elements";
+import { Header, Icon } from "react-native-elements";
+import { useQuery } from "react-query";
+import { ActivityIndicator } from "react-native-paper";
 
-export const Home = (props) => {
-  const [isLoading, setLoading] = useState(true);
-  const [result, setResult] = useState([]);
+export const MyLiterature = (props) => {
+  const [state] = useContext(UserContext);
+  const [message, setMessage] = useState("");
+  const [show, setShow] = useState(false);
 
-  useEffect(() => {
-    fetchData();
-    // async function getToken() {
-    //   const token = await AsyncStorage.getItem("token");
-    //   //console.log(token);
-    // }
-    // getToken();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const res = await API.get("/literatures");
-      setResult(res.data.data.literatures);
-      setLoading(false);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const { isLoading, data: booksProfile, refetch } = useQuery(
+    "getUserBooks",
+    () => API.get(`/profile/${JSON.parse(state.user).id}/literature`)
+  );
 
   const renderItem = ({ item }) => {
     return (
@@ -52,8 +41,16 @@ export const Home = (props) => {
   return (
     <>
       <Header
+        leftComponent={
+          <Icon
+            type="feather"
+            name="arrow-left"
+            color={color.white}
+            onPress={() => props.navigation.goBack()}
+          />
+        }
         centerComponent={{
-          text: "all Literature",
+          text: "my Literature",
           style: {
             color: color.secondary,
             fontSize: 22,
@@ -66,15 +63,19 @@ export const Home = (props) => {
         }}
       />
       <View style={styles.container}>
-        <FlatList
-          data={result}
-          renderItem={renderItem}
-          refreshing={isLoading}
-          onRefresh={fetchData}
-          keyExtractor={(item) => item.id}
-          //horizontal
-          numColumns={2}
-        />
+        {isLoading ? (
+          <ActivityIndicator />
+        ) : (
+          <FlatList
+            data={booksProfile.data.data.literatures}
+            renderItem={renderItem}
+            refreshing={isLoading}
+            onRefresh={refetch}
+            keyExtractor={(item) => item.id}
+            //horizontal
+            numColumns={2}
+          />
+        )}
       </View>
     </>
   );

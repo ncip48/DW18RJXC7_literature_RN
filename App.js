@@ -7,17 +7,32 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import Icon from "react-native-vector-icons/Ionicons";
-import { Landing, Login, Register, Home } from "./src/screens";
+import {
+  Landing,
+  Login,
+  Register,
+  Home,
+  Profile,
+  Collection,
+  SearchLiterature,
+  MyLiterature,
+  DetailLiterature,
+} from "./src/screens";
 import color from "./src/utils/color";
+import { UserContextProvider } from "./src/context/userContext";
+import { LogBox } from "react-native";
+import _ from "lodash";
 
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator();
 
+LogBox.ignoreLogs(["Setting a timer"]);
+
 function bottomTabs() {
   return (
     <Tab.Navigator
-      activeColor={color.white}
-      inactiveColor={color.secondary}
+      activeColor={color.secondary}
+      inactiveColor={color.white}
       barStyle={{ backgroundColor: "#252525" }}
     >
       <Tab.Screen
@@ -32,7 +47,7 @@ function bottomTabs() {
       />
       <Tab.Screen
         name="Search"
-        component={Home}
+        component={SearchLiterature}
         options={{
           tabBarLabel: "Search",
           tabBarIcon: ({ color }) => (
@@ -52,7 +67,7 @@ function bottomTabs() {
       />
       <Tab.Screen
         name="Collection"
-        component={Home}
+        component={Collection}
         options={{
           tabBarLabel: "My Collection",
           tabBarIcon: ({ color }) => (
@@ -62,7 +77,7 @@ function bottomTabs() {
       />
       <Tab.Screen
         name="Profile"
-        component={Home}
+        component={Profile}
         options={{
           tabBarLabel: "Profile",
           tabBarIcon: ({ color }) => (
@@ -87,19 +102,23 @@ export default function App() {
     return <AppLoading />;
   } else {
     return (
-      <NavigationContainer>
-        <StatusBar style="light" />
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          <Stack.Screen name="Landing" component={Landing} />
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="Register" component={Register} />
-          <Stack.Screen name="Home" component={bottomTabs} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <UserContextProvider>
+        <NavigationContainer>
+          <StatusBar style="light" />
+          <Stack.Navigator
+            screenOptions={{
+              headerShown: false,
+            }}
+          >
+            <Stack.Screen name="Landing" component={Landing} />
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Register" component={Register} />
+            <Stack.Screen name="Home" component={bottomTabs} />
+            <Stack.Screen name="myLiterature" component={MyLiterature} />
+            <Stack.Screen name="Detail" component={DetailLiterature} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </UserContextProvider>
     );
   }
 }

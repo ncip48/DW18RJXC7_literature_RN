@@ -7,10 +7,10 @@ export const API = axios.create({
 });
 
 //integrate default header for auth
-// export const setAuthToken = (token) => {
-//   if (token) API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-//   else delete API.defaults.headers.common["Authorization"];
-// };
+export const setAuthToken = (token) => {
+  if (token) API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  else delete API.defaults.headers.common["Authorization"];
+};
 
 export const urlAsset = {
   img: "http://192.168.1.103:5000/src/uploads/img/",

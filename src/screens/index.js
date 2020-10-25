@@ -2,3 +2,8 @@ export * from "./Auth/Login";
 export * from "./Auth/Register";
 export * from "./Landing/Landing";
 export * from "./Home/Home";
+export * from "./Profile/Profile";
+export * from "./Collection/Collection";
+export * from "./MyLiterature/MyLiterature";
+export * from "./SearchLiterature/SearchLiterature";
+export * from "./DetailLiterature/DetailLiterature";

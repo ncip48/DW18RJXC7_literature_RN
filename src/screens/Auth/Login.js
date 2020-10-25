@@ -1,25 +1,88 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import { View, Text, StyleSheet, Dimensions, Image } from "react-native";
 import * as yup from "yup";
 import { Formik } from "formik";
+import { useMutation } from "react-query";
 import { CustomButton, TextInput } from "../../components";
 import color from "../../utils/color";
+import { UserContext } from "../../context/userContext";
+import { API, setAuthToken } from "../../config/api";
+import AsyncStorage from "@react-native-community/async-storage";
+import { Snackbar } from "react-native-paper";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
 
 export const Login = (props) => {
+  const [state, dispatch] = useContext(UserContext);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [visible, setVisible] = React.useState(false);
+
+  const onToggleSnackBar = () => setVisible(!visible);
+
+  const onDismissSnackBar = () => setVisible(false);
+
+  const [loginAction, { isLoading, error }] = useMutation(async (values) => {
+    try {
+      try {
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+        const body = values;
+
+        const res = await API.post("/login", body, config);
+
+        await AsyncStorage.setItem("token", res.data.data.token);
+
+        dispatch({
+          type: "LOGIN_SUCCESS",
+          payload: res.data.data,
+        });
+
+        //console.log(res.data.data.token);
+
+        setAuthToken(res.data.data.token);
+
+        try {
+          const res = await API.get("/auth");
+          dispatch({
+            type: "USER_LOADED",
+            payload: JSON.stringify(res.data.data.user),
+          });
+        } catch (err) {
+          dispatch({
+            type: "AUTH_ERROR",
+          });
+        }
+
+        props.navigation.navigate("Home");
+      } catch (err) {
+        onToggleSnackBar();
+        dispatch({
+          type: "LOGIN_FAILED",
+        });
+        setErrorMsg(err.response.data.error.message);
+      }
+    } catch (err) {
+      onToggleSnackBar();
+      console.log(err);
+      setErrorMsg(err.message);
+    }
+  });
+
   return (
     <View style={styles.container}>
       <Image
         source={require("../../../assets/img/bg1.png")}
-        style={{ top: 0, width: width, height: width }}
+        style={{ position: "absolute", top: 0, width: width, height: width }}
       />
       <Text style={styles.txtHeader}>Sign In</Text>
       <View style={styles.dockerBottom}>
         <Formik
           initialValues={{ email: "", password: "" }}
-          onSubmit={(values) => alert(JSON.stringify(values))}
+          onSubmit={(values) => loginAction(values)}
           validationSchema={yup.object().shape({
             email: yup.string().email().required(),
             password: yup.string().min(8).required(),
@@ -56,8 +119,9 @@ export const Login = (props) => {
                 bgColor={color.secondary}
                 width={width - 70}
                 style={{ height: 40 }}
-                //onPress={handleSubmit}
-                onPress={() => props.navigation.navigate("Home")}
+                loading={isLoading}
+                onPress={handleSubmit}
+                //onPress={() => props.navigation.navigate("Home")}
               >
                 Sign In
               </CustomButton>
@@ -74,6 +138,20 @@ export const Login = (props) => {
           </Text>
         </Text>
       </View>
+      <Snackbar
+        visible={visible}
+        onDismiss={onDismissSnackBar}
+        style={{
+          backgroundColor: color.secondary,
+          bottom: Dimensions.get("window").height - 80,
+        }}
+        action={{
+          label: "X",
+          onPress: () => onDismissSnackBar(),
+        }}
+      >
+        {errorMsg}
+      </Snackbar>
     </View>
   );
 };
