@@ -1,45 +1,52 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { View, StyleSheet, FlatList, Dimensions, Text } from "react-native";
 import { API, urlAsset } from "../../config/api";
-import { CardLiterature, SkeletonCard } from "../../components";
+import { CardLiterature, ListDownload } from "../../components";
 import { UserContext } from "../../context/userContext";
 import color from "../../utils/color";
 import { Header, Icon } from "react-native-elements";
-import { useQuery } from "react-query";
+import * as FileSystem from "expo-file-system";
 import { ActivityIndicator } from "react-native-paper";
 
-export const MyLiterature = (props) => {
+export const MyDownload = (props) => {
   const [state] = useContext(UserContext);
   const [message, setMessage] = useState("");
   const [show, setShow] = useState(false);
+  const [doc, setDoc] = useState([]);
 
-  const { isLoading, data: booksProfile, refetch } = useQuery(
-    "getMyLiterature",
-    () => API.get(`/profile/${JSON.parse(state.user).id}/literature`)
-  );
-
-  const renderItem = ({ item }) => {
-    return (
-      <CardLiterature
-        key={item.id}
-        image={urlAsset.img + item.thumbnail}
-        title={item.title}
-        style={{
-          backgroundColor: color.primary,
-          width: Dimensions.get("window").width / 2 - 30,
-          //height: Dimensions.get("window").width,
-        }}
-        color={color.white}
-        author={item.author}
-        one={false}
-        year={item.publication_date.split("-")[0]}
-        myOwn
-        isActive={item.status === "Approved" ? true : false}
-        status={item.status}
-        onPress={() => props.navigation.navigate("Detail", { id: item.id })}
-      />
-    );
+  const renderItem = ({ item, index }) => {
+    return <ListDownload key={index} name={item.file_name} />;
   };
+
+  useEffect(() => {
+    getDownload();
+  }, []);
+
+  const getDownload = async () => {
+    let dir = await FileSystem.readDirectoryAsync(
+      FileSystem.documentDirectory + "app_docs"
+    );
+
+    dir.forEach((val) => {
+      //setDoc(FileSystem.documentDirectory + "app_docs/" + val);
+      setDoc((doc) => [
+        ...doc,
+        {
+          file_name: val,
+          uri: FileSystem.documentDirectory + "app_docs/" + val,
+        },
+      ]);
+      //   this.state.docsList.push(
+      //     FileSystem.documentDirectory + "app_docs/" + val
+      //   );
+    });
+
+    //await setDoc([...doc, doc]);
+  };
+
+  //   const renderItem = ({ item }) => {
+  //     return <Text>{item}</Text>;
+  //   };
 
   return (
     <>
@@ -53,7 +60,7 @@ export const MyLiterature = (props) => {
           />
         }
         centerComponent={{
-          text: "my Literature",
+          text: "my Download",
           style: {
             color: color.secondary,
             fontSize: 22,
@@ -66,8 +73,28 @@ export const MyLiterature = (props) => {
         }}
       />
       <View style={styles.container}>
-        {isLoading ? (
-          <SkeletonCard />
+        {/* <FlatList
+          data={doc}
+          renderItem={renderItem}
+          //refreshing={isLoading}
+          //onRefresh={refetch}
+          keyExtractor={(index) => index}
+        /> */}
+        {doc.map((val, key) => (
+          <ListDownload
+            key={key}
+            count={key}
+            name={val.file_name}
+            location={val.uri}
+            style={{
+              backgroundColor: color.primary,
+              width: Dimensions.get("window").width,
+            }}
+            color={color.white}
+          />
+        ))}
+        {/* {isLoading ? (
+          <ActivityIndicator />
         ) : booksProfile.data.data.literatures.toString() === "" ? (
           <View
             style={{
@@ -95,7 +122,7 @@ export const MyLiterature = (props) => {
             //horizontal
             numColumns={2}
           />
-        )}
+        )} */}
       </View>
     </>
   );

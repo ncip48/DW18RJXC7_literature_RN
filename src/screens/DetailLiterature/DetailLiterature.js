@@ -1,10 +1,10 @@
 import React, { useContext, useState } from "react";
-import { View, StyleSheet, FlatList, Dimensions } from "react-native";
+import { View, StyleSheet, Text, Dimensions } from "react-native";
 import { API, urlAsset } from "../../config/api";
 import { CardDetails } from "../../components";
 import { UserContext } from "../../context/userContext";
 import color from "../../utils/color";
-import { Header, Icon } from "react-native-elements";
+import { Header, Icon, Overlay } from "react-native-elements";
 import { useQuery } from "react-query";
 import { ActivityIndicator } from "react-native-paper";
 
@@ -13,6 +13,11 @@ export const DetailLiterature = (props) => {
   const [message, setMessage] = useState("");
   const [show, setShow] = useState(false);
   const { id } = props.route.params;
+  const [visible, setVisible] = useState(false);
+
+  const toggleOverlay = () => {
+    setVisible(!visible);
+  };
 
   const { isLoading, error, data: booksData } = useQuery("getBooks", () =>
     API.get(`/literature/${id}`)
@@ -32,10 +37,17 @@ export const DetailLiterature = (props) => {
         color={color.white}
         author={item.author}
         one={false}
+        file={item.attache}
         year={item.publication_date.split("-")[0]}
       />
     );
   };
+
+  // const downloadResumable = FileSystem.createDownloadResumable(
+  //   'http://techslides.com/demos/sample-videos/small.mp4',
+  //   FileSystem.documentDirectory + 'small.mp4',
+  //   {}
+  // );
 
   return (
     <>

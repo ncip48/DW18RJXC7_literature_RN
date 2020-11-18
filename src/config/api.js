@@ -3,7 +3,7 @@ import axios from "axios";
 //set default config base url
 export const API = axios.create({
   //baseURL: "https://herly-backend-library.herokuapp.com/api/v1",
-  baseURL: "http://192.168.1.103:5000/api/v1",
+  baseURL: "http://192.168.1.107:5000/api/v1",
 });
 
 //integrate default header for auth
@@ -13,8 +13,8 @@ export const setAuthToken = (token) => {
 };
 
 export const urlAsset = {
-  img: "http://192.168.1.103:5000/src/uploads/img/",
-  books: "http://192.168.1.103:5000/src/uploads/books/",
+  img: "http://192.168.1.107:5000/src/uploads/img/",
+  books: "http://192.168.1.107:5000/src/uploads/books/",
 };
 
 //production

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, FlatList, Dimensions } from "react-native";
 import { API, urlAsset } from "../../config/api";
-import { CardLiterature } from "../../components";
+import { CardLiterature, SkeletonCard } from "../../components";
 import color from "../../utils/color";
 import { Header } from "react-native-elements";
 
@@ -21,7 +21,7 @@ export const Home = (props) => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const res = await API.get("/literatures");
+      const res = await API.get("/literatures?status=Approved");
       setResult(res.data.data.literatures);
       setLoading(false);
     } catch (err) {
@@ -44,6 +44,8 @@ export const Home = (props) => {
         author={item.author}
         one={false}
         year={item.publication_date.split("-")[0]}
+        status={item.status}
+        isActive
         onPress={() => props.navigation.navigate("Detail", { id: item.id })}
       />
     );
@@ -66,15 +68,19 @@ export const Home = (props) => {
         }}
       />
       <View style={styles.container}>
-        <FlatList
-          data={result}
-          renderItem={renderItem}
-          refreshing={isLoading}
-          onRefresh={fetchData}
-          keyExtractor={(item) => item.id}
-          //horizontal
-          numColumns={2}
-        />
+        {isLoading ? (
+          <SkeletonCard />
+        ) : (
+          <FlatList
+            data={result}
+            renderItem={renderItem}
+            refreshing={isLoading}
+            onRefresh={fetchData}
+            keyExtractor={(item) => item.id.toString()}
+            //horizontal
+            numColumns={2}
+          />
+        )}
       </View>
     </>
   );

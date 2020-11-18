@@ -17,6 +17,8 @@ import {
   SearchLiterature,
   MyLiterature,
   DetailLiterature,
+  AddLiterature,
+  MyDownload,
 } from "./src/screens";
 import color from "./src/utils/color";
 import { UserContextProvider } from "./src/context/userContext";
@@ -57,7 +59,7 @@ function bottomTabs() {
       />
       <Tab.Screen
         name="Add"
-        component={Home}
+        component={AddLiterature}
         options={{
           tabBarLabel: "Add Literature",
           tabBarIcon: ({ color }) => (
@@ -98,6 +100,8 @@ export default function App() {
     "Times-Bold": require("./assets/fonts/TimesNewRoman/Times-Bold.ttf"),
   });
 
+  //"softwareKeyboardLayoutMode": "pan"
+
   if (!isLoaded) {
     return <AppLoading />;
   } else {
@@ -116,6 +120,7 @@ export default function App() {
             <Stack.Screen name="Home" component={bottomTabs} />
             <Stack.Screen name="myLiterature" component={MyLiterature} />
             <Stack.Screen name="Detail" component={DetailLiterature} />
+            <Stack.Screen name="myDownload" component={MyDownload} />
           </Stack.Navigator>
         </NavigationContainer>
       </UserContextProvider>

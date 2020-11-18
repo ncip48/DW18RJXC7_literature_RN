@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Dimensions, Image } from "react-native";
 import { CustomButton } from "../../components";
 import color from "../../utils/color";
 import AsyncStorage from "@react-native-community/async-storage";
+import { StatusBar } from "expo-status-bar";
 import { API, setAuthToken } from "../../config/api";
 import { UserContext } from "../../context/userContext";
 
@@ -61,37 +62,39 @@ export const Landing = (props) => {
   //alert(state.user);
 
   return (
-    <View style={styles.container}>
-      <Image
-        source={require("../../../assets/img/bg1.png")}
-        style={{ position: "absolute", top: 0, width: width, height: width }}
-      />
-      <Text style={styles.header}>source of intelligence</Text>
-      <Text style={styles.subHeader}>
-        Sign-up and receive unlimited accesss to all of your literatur - share
-        your literature.
-      </Text>
-      <View style={styles.containerBtn}>
-        <CustomButton
-          color={color.white}
-          bgColor={color.secondary}
-          width={(1 / 2) * width - 40}
-          style={{ marginRight: 10 }}
-          onPress={() => props.navigation.navigate("Register")}
-        >
-          Sign Up
-        </CustomButton>
-        <CustomButton
-          color={color.black}
-          bgColor={color.white}
-          width={(1 / 2) * width - 40}
-          style={{ marginLeft: 10 }}
-          onPress={() => props.navigation.navigate("Login")}
-        >
-          Sign In
-        </CustomButton>
+    <>
+      <View style={styles.container}>
+        <Image
+          source={require("../../../assets/img/bg1.png")}
+          style={{ position: "absolute", top: 0, width: width, height: width }}
+        />
+        <Text style={styles.header}>source of intelligence</Text>
+        <Text style={styles.subHeader}>
+          Sign-up and receive unlimited accesss to all of your literatur - share
+          your literature.
+        </Text>
+        <View style={styles.containerBtn}>
+          <CustomButton
+            color={color.white}
+            bgColor={color.secondary}
+            width={(1 / 2) * width - 40}
+            style={{ marginRight: 10 }}
+            onPress={() => props.navigation.navigate("Register")}
+          >
+            Sign Up
+          </CustomButton>
+          <CustomButton
+            color={color.black}
+            bgColor={color.white}
+            width={(1 / 2) * width - 40}
+            style={{ marginLeft: 10 }}
+            onPress={() => props.navigation.navigate("Login")}
+          >
+            Sign In
+          </CustomButton>
+        </View>
       </View>
-    </View>
+    </>
   );
 };
 

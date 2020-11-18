@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, FlatList, Dimensions, Text } from "react-native";
 import { API, urlAsset } from "../../config/api";
-import { CardLiterature } from "../../components";
+import { CardLiterature, ListLiterature } from "../../components";
 import color from "../../utils/color";
 import { Header, SearchBar, Icon, Overlay } from "react-native-elements";
 import { RadioButton } from "react-native-paper";
@@ -10,7 +10,7 @@ export const SearchLiterature = (props) => {
   const [isLoading, setLoading] = useState(true);
   const [value, setValue] = React.useState(" ");
   const [show, setShow] = useState(false);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(null);
   const [result, setResult] = useState([]);
   let year = "";
 
@@ -37,17 +37,17 @@ export const SearchLiterature = (props) => {
 
   const renderItem = ({ item }) => {
     return (
-      <CardLiterature
+      <ListLiterature
         key={item.id}
         image={urlAsset.img + item.thumbnail}
         title={item.title}
         style={{
           backgroundColor: color.primary,
-          width: Dimensions.get("window").width / 2 - 20,
+          width: Dimensions.get("window").width,
         }}
         color={color.white}
         author={item.author}
-        one={false}
+        //one={false}
         year={item.publication_date.split("-")[0]}
         onPress={() => props.navigation.navigate("Detail", { id: item.id })}
       />
@@ -85,19 +85,51 @@ export const SearchLiterature = (props) => {
       />
       <View style={styles.container}>
         <Text style={styles.textSearch}>
-          {query === "" ? "Search Literature" : `Result: ${query}`}
+          {query === null || query === ""
+            ? null
+            : query === ""
+            ? "Search Literature"
+            : `Result: ${query}`}
         </Text>
-        {result.toString() === "" ? (
-          <Text style={styles.txtNotFound}>No data found</Text>
+        {query === null || query === "" ? (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+            }}
+          >
+            <Icon
+              name="search"
+              type="material"
+              color={color.secondary}
+              size={60}
+            />
+            <Text style={styles.txtNotFound}>Start Searching</Text>
+          </View>
+        ) : result.toString() === "" ? (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+            }}
+          >
+            <Icon
+              name="book-remove-multiple"
+              type="material-community"
+              color={color.secondary}
+              size={60}
+            />
+            <Text style={styles.txtNotFound}>No data found</Text>
+          </View>
         ) : (
           <FlatList
             data={result}
             renderItem={renderItem}
             refreshing={isLoading}
             onRefresh={() => fetchData("")}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id.toString()}
             //horizontal
-            numColumns={2}
+            //numColumns={2}
           />
         )}
       </View>

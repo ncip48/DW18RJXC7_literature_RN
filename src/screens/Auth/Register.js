@@ -1,15 +1,77 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 import * as yup from "yup";
+import { useMutation } from "react-query";
+import { API, setAuthToken } from "../../config/api";
 import { Formik } from "formik";
+import { UserContext } from "../../context/userContext";
 import { CustomButton, TextInput, CustomPicker } from "../../components";
 import color from "../../utils/color";
+import AsyncStorage from "@react-native-community/async-storage";
+import { Snackbar } from "react-native-paper";
 
 const width = Dimensions.get("window").width;
 const height = Dimensions.get("window").height;
 
 export const Register = (props) => {
+  const [state, dispatch] = useContext(UserContext);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [visible, setVisible] = React.useState(false);
+
+  const onToggleSnackBar = () => setVisible(!visible);
+
+  const onDismissSnackBar = () => setVisible(false);
+
+  const [registerAction, { isLoading, error }] = useMutation(async (values) => {
+    try {
+      try {
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+        const body = values;
+
+        const res = await API.post("/register", body, config);
+
+        await AsyncStorage.setItem("token", res.data.data.token);
+
+        dispatch({
+          type: "LOGIN_SUCCESS",
+          payload: res.data.data,
+        });
+
+        //console.log(res.data.data.token);
+
+        setAuthToken(res.data.data.token);
+
+        try {
+          const res = await API.get("/auth");
+          dispatch({
+            type: "USER_LOADED",
+            payload: JSON.stringify(res.data.data.user),
+          });
+        } catch (err) {
+          dispatch({
+            type: "AUTH_ERROR",
+          });
+        }
+
+        props.navigation.navigate("Home");
+      } catch (err) {
+        onToggleSnackBar();
+        dispatch({
+          type: "LOGIN_FAILED",
+        });
+        setErrorMsg(err.response.data.error.message);
+      }
+    } catch (err) {
+      onToggleSnackBar();
+      console.log(err);
+      setErrorMsg(err.message);
+    }
+  });
   return (
     <View style={styles.container}>
       <Text style={styles.txtHeader}>Sign Up</Text>
@@ -23,7 +85,7 @@ export const Register = (props) => {
             phone: "",
             address: "",
           }}
-          onSubmit={(values) => alert(JSON.stringify(values))}
+          onSubmit={(values) => registerAction(values)}
           validationSchema={yup.object().shape({
             email: yup.string().email().required(),
             password: yup.string().min(8).required(),
@@ -104,6 +166,7 @@ export const Register = (props) => {
                 width={width - 70}
                 style={{ height: 40 }}
                 onPress={handleSubmit}
+                loading={isLoading}
               >
                 Sign Up
               </CustomButton>
@@ -120,6 +183,20 @@ export const Register = (props) => {
           </Text>
         </Text>
       </View>
+      <Snackbar
+        visible={visible}
+        onDismiss={onDismissSnackBar}
+        style={{
+          backgroundColor: color.secondary,
+          bottom: Dimensions.get("window").height - 80,
+        }}
+        action={{
+          label: "X",
+          onPress: () => onDismissSnackBar(),
+        }}
+      >
+        {errorMsg}
+      </Snackbar>
     </View>
   );
 };

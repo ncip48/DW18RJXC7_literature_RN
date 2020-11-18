@@ -7,3 +7,5 @@ export * from "./Collection/Collection";
 export * from "./MyLiterature/MyLiterature";
 export * from "./SearchLiterature/SearchLiterature";
 export * from "./DetailLiterature/DetailLiterature";
+export * from "./AddLiterature/AddLiterature";
+export * from "./MyDownloads/MyDownload";
