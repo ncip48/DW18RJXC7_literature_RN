@@ -138,22 +138,38 @@ export const Profile = (props) => {
               tension={100} // These props are passed to the parent component (here TouchableScale)
               activeScale={0.95} //
             >
-              <Avatar
-                size="large"
-                rounded
-                source={{
-                  uri: urlAsset.img + userDetail.data.data.user.photoProfile,
-                }}
-                title={userDetail.data.data.user.fullName[0]}
-              >
-                <Accessory
-                  size={20}
-                  color={color.white}
-                  style={{ backgroundColor: color.triple }}
-                  onPress={() => sheetRef.current.snapTo(0)}
-                  //onPress={pickImage}
-                />
-              </Avatar>
+              {userDetail.data.data.user.photoProfile == null ? (
+                <Avatar
+                  size="large"
+                  rounded
+                  title={userDetail.data.data.user.fullName[0]}
+                >
+                  <Accessory
+                    size={20}
+                    color={color.white}
+                    style={{ backgroundColor: color.triple }}
+                    onPress={() => sheetRef.current.snapTo(0)}
+                    //onPress={pickImage}
+                  />
+                </Avatar>
+              ) : (
+                <Avatar
+                  size="large"
+                  rounded
+                  source={{
+                    uri: urlAsset.img + userDetail.data.data.user.photoProfile,
+                  }}
+                  title={userDetail.data.data.user.fullName[0]}
+                >
+                  <Accessory
+                    size={20}
+                    color={color.white}
+                    style={{ backgroundColor: color.triple }}
+                    onPress={() => sheetRef.current.snapTo(0)}
+                    //onPress={pickImage}
+                  />
+                </Avatar>
+              )}
               <ListItem.Content>
                 <ListItem.Title style={styles.textListItemName}>
                   {userDetail.data.data.user.fullName}

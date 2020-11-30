@@ -3,9 +3,10 @@ import { View, Text, Dimensions, ScrollView } from "react-native";
 import { Card, Icon, Overlay } from "react-native-elements";
 import color from "../../utils/color";
 import { CustomButton } from "../Button/Button";
-import { urlAsset } from "../../config/api";
 import * as FileSystem from "expo-file-system";
 import { Snackbar } from "react-native-paper";
+import { urlAsset, API } from "../../config/api";
+import { useMutation } from "react-query";
 
 const width = Dimensions.get("window").width;
 
@@ -46,6 +47,25 @@ export const CardDetails = (props) => {
   const toggleOverlayC = () => {
     setVisibleC(!visibleC);
   };
+
+  const [addCollection] = useMutation(async (literatureId) => {
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+      const body = JSON.stringify({ literatureId: literatureId });
+
+      const res = await API.post(`/collection/`, body, config);
+      setMessage(res.data.message);
+      onToggleSnackBar();
+    } catch (err) {
+      console.log(err);
+      setMessage(err.response.data.error.message);
+      onToggleSnackBar();
+    }
+  });
 
   const donwloadFile = async () => {
     try {
@@ -244,48 +264,50 @@ export const CardDetails = (props) => {
         isVisible={visible}
         onBackdropPress={toggleOverlay}
       >
-        <Text
-          style={{
-            color: color.white,
-            fontSize: 22,
-            fontFamily: "Metropolis-Bold",
-            textAlign: "center",
-            marginTop: 20,
-          }}
-        >
-          Do you want to download this literature?
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            padding: 10,
-            justifyContent: "center",
-          }}
-        >
-          <CustomButton
-            color={color.white}
-            bgColor={"transparent"}
-            width={width / 2 - 50}
-            //style={{ height: 40 }}
-            onPress={() => {
-              donwloadFile();
-              toggleOverlay();
+        <>
+          <Text
+            style={{
+              color: color.white,
+              fontSize: 22,
+              fontFamily: "Metropolis-Bold",
+              textAlign: "center",
+              marginTop: 20,
             }}
-            //onPress={() => props.navigation.navigate("Home")}
           >
-            Yes
-          </CustomButton>
-          <CustomButton
-            color={color.secondary}
-            bgColor={"transparent"}
-            width={width / 2 - 50}
-            //style={{ height: 40 }}
-            //onPress={() => props.navigation.navigate("Home")}
-            onPress={toggleOverlay}
+            Do you want to download this literature?
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              padding: 10,
+              justifyContent: "center",
+            }}
           >
-            No
-          </CustomButton>
-        </View>
+            <CustomButton
+              color={color.white}
+              bgColor={"transparent"}
+              width={width / 2 - 50}
+              //style={{ height: 40 }}
+              onPress={() => {
+                donwloadFile();
+                toggleOverlay();
+              }}
+              //onPress={() => props.navigation.navigate("Home")}
+            >
+              Yes
+            </CustomButton>
+            <CustomButton
+              color={color.secondary}
+              bgColor={"transparent"}
+              width={width / 2 - 50}
+              //style={{ height: 40 }}
+              //onPress={() => props.navigation.navigate("Home")}
+              onPress={toggleOverlay}
+            >
+              No
+            </CustomButton>
+          </View>
+        </>
       </Overlay>
       <Overlay
         overlayStyle={{
@@ -299,48 +321,53 @@ export const CardDetails = (props) => {
         isVisible={visibleC}
         onBackdropPress={toggleOverlayC}
       >
-        <Text
-          style={{
-            color: color.white,
-            fontSize: 22,
-            fontFamily: "Metropolis-Bold",
-            textAlign: "center",
-            marginTop: 20,
-          }}
-        >
-          Do you want to add to collection?
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            padding: 10,
-            justifyContent: "center",
-          }}
-        >
-          <CustomButton
-            color={color.white}
-            bgColor={"transparent"}
-            width={width / 2 - 50}
-            //style={{ height: 40 }}
-            // onPress={() => {
-            //   donwloadFile();
-            //   toggleOverlay();
-            // }}
-            //onPress={() => props.navigation.navigate("Home")}
+        <>
+          <Text
+            style={{
+              color: color.white,
+              fontSize: 22,
+              fontFamily: "Metropolis-Bold",
+              textAlign: "center",
+              marginTop: 20,
+            }}
           >
-            Yes
-          </CustomButton>
-          <CustomButton
-            color={color.secondary}
-            bgColor={"transparent"}
-            width={width / 2 - 50}
-            //style={{ height: 40 }}
-            //onPress={() => props.navigation.navigate("Home")}
-            onPress={toggleOverlayC}
+            Do you want to add to collection?
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              padding: 10,
+              justifyContent: "center",
+            }}
           >
-            No
-          </CustomButton>
-        </View>
+            <CustomButton
+              color={color.white}
+              bgColor={"transparent"}
+              width={width / 2 - 50}
+              //style={{ height: 40 }}
+              // onPress={() => {
+              //   donwloadFile();
+              //   toggleOverlay();
+              // }}
+              onPress={() => {
+                addCollection(props.data.id);
+                toggleOverlayC();
+              }}
+            >
+              Yes
+            </CustomButton>
+            <CustomButton
+              color={color.secondary}
+              bgColor={"transparent"}
+              width={width / 2 - 50}
+              //style={{ height: 40 }}
+              //onPress={() => props.navigation.navigate("Home")}
+              onPress={toggleOverlayC}
+            >
+              No
+            </CustomButton>
+          </View>
+        </>
       </Overlay>
     </>
   );

@@ -16,6 +16,7 @@
     "@use-expo/font": "^2.0.0",
     "axios": "^0.21.0",
     "expo": "~39.0.2",
+    "expo-document-picker": "~8.4.0",
     "expo-file-system": "~9.2.0",
     "expo-image-picker": "~9.1.0",
     "expo-status-bar": "~1.0.2",

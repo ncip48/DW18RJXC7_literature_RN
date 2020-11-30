@@ -14,7 +14,7 @@ export const SkeletonCard = () => {
     >
       <SkeletonPlaceholder
         backgroundColor={color.triple}
-        highlightColor={color.triple}
+        //highlightColor={color.triple}
       >
         <SkeletonPlaceholder.Item
           flexDirection="row"

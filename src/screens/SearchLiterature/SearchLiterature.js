@@ -22,7 +22,7 @@ export const SearchLiterature = (props) => {
     try {
       setLoading(true);
       const res = await API.get(
-        `/literature?title=${query}&public_year=${year}`
+        `/literature?title=${query}&public_year=${year}&status=Approved`
       );
       setResult(res.data.data.literatures);
       setLoading(false);

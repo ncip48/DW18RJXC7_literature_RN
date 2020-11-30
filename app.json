@@ -1,18 +1,16 @@
 {
   "expo": {
     "name": "myLiterature",
-    "slug": "myLiterature",
+    "slug": "myliterature",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#161616",
+      "backgroundColor": "#161616"
     },
-    "android": {
-      
-    },
+    "android": {},
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -24,6 +22,8 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "myLiterature is a platform for storing and downloading literature for free which has various titles and year",
+    "githubUrl": "https://github.com/ncip48/DW18RJXC7_literature_RN"
   }
 }

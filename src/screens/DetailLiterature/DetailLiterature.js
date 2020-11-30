@@ -1,10 +1,10 @@
 import React, { useContext, useState } from "react";
 import { View, StyleSheet, Text, Dimensions } from "react-native";
-import { API, urlAsset } from "../../config/api";
 import { CardDetails } from "../../components";
 import { UserContext } from "../../context/userContext";
 import color from "../../utils/color";
 import { Header, Icon, Overlay } from "react-native-elements";
+import { API, urlAsset } from "../../config/api";
 import { useQuery } from "react-query";
 import { ActivityIndicator } from "react-native-paper";
 
@@ -39,6 +39,7 @@ export const DetailLiterature = (props) => {
         one={false}
         file={item.attache}
         year={item.publication_date.split("-")[0]}
+        id={item.id}
       />
     );
   };
